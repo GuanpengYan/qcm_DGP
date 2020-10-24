@@ -36,7 +36,7 @@ DGP1 <- function(N, T0){
   #Calculate y.ctfl
   y.ctfl <- array(dim = c(N, T))
   for(t in 1:T) for(i in 1:N) 
-    y[i, t] <- sum(x[, i, t] * beta)+sum(gamma[ ,i] * f[, t]) + u[i, t]
+    y.ctfl[i, t] <- sum(x[, i, t] * beta)+sum(gamma[ ,i] * f[, t]) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
   
