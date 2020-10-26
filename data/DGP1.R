@@ -39,7 +39,7 @@ DGP1 <- function(N, T0){
     y.ctfl[i, t] <- sum(x[, i, t] * beta)+sum(gamma[ ,i] * f[, t]) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
-  
+  #return data
   return(list(
     N = N,
     T0 = T0,
@@ -60,7 +60,7 @@ DGP1 <- function(N, T0){
   ))
 }
 
-BS <- 1:1000
+BS <- 1:100
 T0 <- seq(10, 90, 10)
 N <- seq(60, 90, 10)
 DGP1_data  <- list()
@@ -77,4 +77,4 @@ for(n in N){
   }
   DGP1_data[[n]] <- T_list
 }
-save(DGP1_data,file = "DGP1_data.Rdata")
+save(DGP1_data, file = paste("DGP1_data(", max(BS), ").Rdata", sep = ""))

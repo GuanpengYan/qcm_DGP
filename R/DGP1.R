@@ -10,8 +10,7 @@
 # Other parameters and DGP are all fixed 
 # ci.qcm refers to "confidence interval for quantile control method"
 
-DGP1 <- function(N, T0){
-  T1 <- 10
+dataGeneratingProcess1 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 2)
   T <- T0 + T1
@@ -25,18 +24,18 @@ DGP1 <- function(N, T0){
     sigma2 <- 0.5 * (rchisq(N, df = 1) + 1)
     v <- array(dim = c(N, T)); for(i in 1:N) v[i, ] <- rnorm(n = T, mean = 0, sd = sqrt(sigma2[i]));
     u <- array(dim = c(N, T), data = v); b = 1; 
-    for(i in 2:(N - 1)) u[i, ] <- (1 + b ^ 2) * v[i, ] + b * v[i + 1, ] + b * v[i - 1,]
+    for(i in 2:(N - 1)) u[i, ] <- (1 + b ^ 2) * v[i,] + b * v[i + 1,] + b * v[i - 1,]
   }
   #Calculate x
   x <- array(dim = c(K, N, T))
   for(t in 1:T) for(i in 1:N) for(k in 1:K) x[k, i, t] <- ifelse(
     t == 1,
-    1 + sum(c[, i]*c(gamma[k, i],f[k, t]))+eta[k, i, t],
-    1 + rho[k, i]* x[k, i, t - 1] + c[1, i] * gamma[k, i] + c[2, i] * f[k, t] + eta[k, i, t])
+    1 + sum(c[, i] * c(gamma[k, i],f[k, t]))+eta[k, i, t],
+    1 + rho[k, i] * x[k, i, t - 1] + c[1, i] * gamma[k, i] + c[2, i] * f[k, t] + eta[k, i, t])
   #Calculate y.ctfl
   y.ctfl <- array(dim = c(N, T))
   for(t in 1:T) for(i in 1:N) 
-    y[i, t] <- sum(x[, i, t] * beta)+sum(gamma[ ,i] * f[, t]) + u[i, t]
+    y.ctfl[i, t] <- sum(x[, i, t] * beta)+sum(gamma[, i] * f[, t]) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
   
@@ -59,22 +58,14 @@ DGP1 <- function(N, T0){
     y.actl = y.actl
   ))
 }
-
-BS <- 1:1000
-T0 <- seq(10, 90, 10)
-N <- seq(60, 90, 10)
-DGP1_data  <- list()
-set.seed(1)
-for(n in N){
-  T_list <- list()
-  for(t0 in T0){
-    BS_list <- list()
-    for(bs in BS){
-      cat("N = ", n, ", T0 = ", t0, ", BS = ", bs, "\n")
-      BS_list[[bs]] <- DGP1(n, t0)
-    }
-    T_list[[t0]] <- BS_list
-  }
-  DGP1_data[[n]] <- T_list
-}
-save(DGP1_data,file = "DGP1_data.Rdata")
+# source("R/.Source.R")
+# 
+# DGP1_data <- DGP1(
+#   nthreads = 4, 
+#   seed = 1, 
+#   N = seq(60, 90, 10), 
+#   T0 = seq(10, 90, 10), 
+#   BS = 1:10, 
+#   dataGeneratingProcess1 = dataGeneratingProcess1
+# )
+# save(DGP1_data,file = "DGP1_data.Rdata")
