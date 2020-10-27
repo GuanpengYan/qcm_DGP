@@ -10,7 +10,7 @@
 # Other parameters and DGP are all fixed 
 # ci.qcm refers to "confidence interval for quantile control method"
 
-dataGeneratingProcess2 <- function(N, T0, T1){
+dataGeneratingProcess3 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 4)
   T <- T0 + T1
