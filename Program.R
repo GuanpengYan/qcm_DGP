@@ -36,6 +36,7 @@ for(i in Process){
   
   for(n in N) for(t0 in T0){
     getPlot(result, N = n, T0 = t0, T1 = T1)
-    ggsave(paste0("photo/DGP", i, ",N=", n, ",T0=", t0, ".png"))}
+    ggsave(paste0("photo/DGP", i, ",N=", n, ",T0=", t0, ".png"),
+           width = 8, height = 4.5)}
 }
 
