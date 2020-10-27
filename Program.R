@@ -12,7 +12,7 @@ seed <- 1
 Process <- 1:7
 
 for(i in Process){
-  file <- paste0("DGP", i, "_data.Rdata")
+  file <- paste0("DGP", i, "_data", "(BS=", max(BS), ").Rdata")
   if(!file %in% dir(path = "data")){
     object <- getQCM(getDGP(
       Process = i,
