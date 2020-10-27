@@ -10,7 +10,7 @@
 # Other parameters and DGP are all fixed 
 # ci.qcm refers to "confidence interval for quantile control method"
 
-dataGeneratingProcess1 <- function(N, T0, T1){
+dataGeneratingProcess5 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 4)
   T <- T0 + T1
@@ -19,7 +19,11 @@ dataGeneratingProcess1 <- function(N, T0, T1){
   c <- array(dim = c(3, N), data = runif(N * 2, min = 1, max = 2))
   eta <- array(dim = c(K, N, T), data = rnorm(N * T * K, mean = 0, sd = 1))
   f <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
-  u <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
+  phi <- runif(N, min = 0.1, max = 0.9)
+  xi <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
+  u <- array(dim = c(N, T))
+  for(t in 1:T) u[, t] <- (if(t == 1)
+    sqrt(1 - phi^2) * xi[, t] else sqrt(1 - phi^2) * (phi * u[, t-1] + xi[, t]))
   
   #Calculate x
   x <- array(dim = c(K, N, T))
@@ -45,6 +49,8 @@ dataGeneratingProcess1 <- function(N, T0, T1){
     c = c,
     eta = eta,
     f = f,
+    phi = phi,
+    xi = xi,
     u = u,
     x = x,
     y.ctfl = y.ctfl,

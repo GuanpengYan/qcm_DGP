@@ -1,21 +1,41 @@
 rm(list = ls())
+library(ggplot2)
 source("R/.Source.R")
 
 # Default Setting
-N = seq(45, 90, 15)
-T0 = seq(30, 90, 10)
-T1 = 10
-BS = 1:20
+N <- c(40,70)
+T0 <- c(40,70)
+T1 <- 10
+BS <- 1:10
+nthreads <- 2
+seed <- 1
+Process <- 1:7
 
-DGP1_data <- getDGP(
-  Process = 1,
-  nthreads = 4,
-  seed = 1,
-  N = N,
-  T0 = T0,
-  T1 = T1,
-  BS = BS
-)
-DGP1_data <- getQCM(data = DGP1_data, nthreads = 4, seed = 1)
-DGP1_data <- getIndicator(data = DGP1_data, N = N, T0 = T0, T1 = T1, BS = BS)
-getPlot(DGP1_data, N = 90, T0 = 80, T1 = 10)
+for(i in Process){
+  file <- paste0("DGP", i, "_data.Rdata")
+  if(!file %in% dir(path = "data")){
+    object <- getQCM(getDGP(
+      Process = i,
+      nthreads = nthreads,
+      seed = seed,
+      N = N,
+      T0 = T0,
+      T1 = T1,
+      BS = BS),nthreads = nthreads, seed = seed)
+    save(object, file = paste0("data/", file))
+  }else load(paste("data/", file, sep = ""))
+  
+  result <- getIndicator(
+    data = object, 
+    Process = i, 
+    N = N, 
+    T0 = T0, 
+    T1 = T1,
+    BS = BS)
+  openxlsx::write.xlsx(result, file = paste0("DGP", i, ".xlsx"))
+  
+  for(n in N) for(t0 in T0){
+    getPlot(result, N = n, T0 = t0, T1 = T1)
+    ggsave(paste0("photo/DGP", i, ",N=", n, ",T0=", t0, ".png"))}
+}
+

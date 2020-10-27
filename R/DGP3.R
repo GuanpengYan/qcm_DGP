@@ -10,7 +10,7 @@
 # Other parameters and DGP are all fixed 
 # ci.qcm refers to "confidence interval for quantile control method"
 
-dataGeneratingProcess1 <- function(N, T0, T1){
+dataGeneratingProcess3 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 4)
   T <- T0 + T1
@@ -20,6 +20,7 @@ dataGeneratingProcess1 <- function(N, T0, T1){
   eta <- array(dim = c(K, N, T), data = rnorm(N * T * K, mean = 0, sd = 1))
   f <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
   u <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
+  LAMBDA <- function(x) return(1/(1 + exp(-x)))
   
   #Calculate x
   x <- array(dim = c(K, N, T))
@@ -30,7 +31,7 @@ dataGeneratingProcess1 <- function(N, T0, T1){
   #Calculate y.ctfl
   y.ctfl <- array(dim = c(N, T))
   for(t in 1:T) for(i in 1:N) 
-    y.ctfl[i, t] <- sum(x[, i, t] * beta) + sum(gamma[, i] * f[, t]) + u[i, t]
+    y.ctfl[i, t] <- LAMBDA(sum(x[, i, t] * beta) + sum(gamma[, i] * f[, t])) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
   

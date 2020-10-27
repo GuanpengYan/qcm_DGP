@@ -4,7 +4,7 @@ parallelLapply <- function(nthreads, seed, ...){
     return(lapply(...))
   }else{
     cl <- parallel::makeCluster(nthreads)
-    if(!is.null(seed)) parallel::clusterSetRNGStream(cl, seed )
+    if(!is.null(seed)) parallel::clusterSetRNGStream(cl, seed)
     ans <- parallel::parLapply(cl, ...)
     parallel::stopCluster(cl)
     return(ans)
@@ -12,32 +12,29 @@ parallelLapply <- function(nthreads, seed, ...){
 }
 
 getQCM <- function(data, nthreads, seed){
-  return(parallelLapply(nthreads, seed, data, function(x){
-    if(is.null(x)) x else {
+  return(
+    parallelLapply(nthreads, seed, data, function(x){
       lapply(x, function(x){
-        if(is.null(x)) x else{
-          lapply(x, function(x){
-            object <- x
-            N <- object$N; T0 <-object$T0;
-            cat("N = ", N, ", T0 = ", T0, "\n")
-            QCM.x <- t(object$y.ctfl)[,-1]
-            QCMX.x <- QCM.x
-            for(k in 1:object$K) QCMX.x <- cbind(QCMX.x, t(object$x[k,,]))
-            y <- object$y.ctfl[1,]
-            QCM.fit <- quantregForest::quantregForest(x = QCM.x[1:T0,], y = y[1:T0])
-            QCM.y <- predict(QCM.fit, QCM.x, what = c(0.025, 0.5, 0.975))
-            QCM.y <- cbind(QCM.y, mean = predict(QCM.fit, QCM.x, what = mean))              
-            QCMX.fit <- quantregForest::quantregForest(x = QCMX.x[1:T0,], y = y[1:T0])
-            QCMX.y <- predict(QCMX.fit, QCMX.x, what = c(0.025, 0.5, 0.975))
-            QCMX.y <- cbind(QCMX.y, mean = predict(QCMX.fit, QCMX.x, what = mean)) 
-            object$QCM.y <- QCM.y
-            object$QCMX.y <- QCMX.y
-            object
-          })
-        }
+        lapply(x, function(x){
+          object <- x
+          N <- object$N; T0 <-object$T0;
+          cat("N = ", N, ", T0 = ", T0, "\n")
+          QCM.x <- t(object$y.ctfl)[,-1]
+          QCMX.x <- QCM.x
+          for(k in 1:object$K) QCMX.x <- cbind(QCMX.x, t(object$x[k,,]))
+          y <- object$y.ctfl[1,]
+          QCM.fit <- quantregForest::quantregForest(x = QCM.x[1:T0,], y = y[1:T0], nthreads = nthreads)
+          QCM.y <- predict(QCM.fit, QCM.x, what = c(0.025, 0.5, 0.975))
+          QCM.y <- cbind(QCM.y, mean = predict(QCM.fit, QCM.x, what = mean))              
+          QCMX.fit <- quantregForest::quantregForest(x = QCMX.x[1:T0,], y = y[1:T0], nthreads = nthreads)
+          QCMX.y <- predict(QCMX.fit, QCMX.x, what = c(0.025, 0.5, 0.975))
+          QCMX.y <- cbind(QCMX.y, mean = predict(QCMX.fit, QCMX.x, what = mean)) 
+          object$QCM.y <- QCM.y
+          object$QCMX.y <- QCMX.y
+          object
+        })
       })
-    }
-  }))
+    }))
 }
 getDGP <- function(Process, nthreads, seed, N, T0, T1, BS){
   source(paste("R/DGP", Process, ".R", sep = ""))
@@ -83,7 +80,7 @@ SE <- function(actl, pred, T0){
 AD <- function(actl, pred, T0){
   return(abs(actl[1, -1:-T0] - pred[-1:-T0, 2]))
 }
-getIndicator <- function(data, N, T0, T1, BS){
+getIndicator <- function(data, Process, N, T0, T1, BS){
   ans <- NULL
   for(n in 1:length(N)){
     for(t0 in 1:length(T0)){
@@ -101,6 +98,7 @@ getIndicator <- function(data, N, T0, T1, BS){
         QCMX.MAD <- rbind(QCMX.MAD, AD(object$y.actl, object$QCMX.y, T0[t0]))
       }
       ans <- rbind(ans, data.frame(
+        Process = rep(paste0("DGP", Process), 4*T1),
         N = rep(N[n], 4*T1), 
         T0 = rep(T0[t0], 4*T1), 
         Time = rep(1:T1, 4),
@@ -121,14 +119,14 @@ getIndicator <- function(data, N, T0, T1, BS){
   return(ans)
 }
 getPlot <- function(data, N, T0, T1){
-  ggplot2::ggplot(data = data[data$N == N & data$T0 == T0, ][,-1:-2]) +
-    ggplot2::geom_line(aes(x = Time, y = QCM, group = Indicator, colour = "QCM")) +
-    ggplot2::geom_point(aes(x = Time, y = QCM, group = Indicator, colour = "QCM")) +
-    ggplot2::geom_line(aes(x = Time, y = QCMX, group = Indicator, colour = "QCMX")) + 
-    ggplot2::geom_point(aes(x = Time, y = QCMX, group = Indicator, colour = "QCMX")) +
-    ggplot2::facet_wrap(.~Indicator, scales = "free_y") +
-    ggplot2::xlab("Post-treatment period") + 
-    ggplot2::ylab("")+
-    ggplot2::scale_colour_hue("")+
-    ggplot2::scale_x_continuous(breaks = 1:T1)
+  ggplot(data = data[data$N == N & data$T0 == T0, ][,-1:-2]) +
+    geom_line(aes(x = Time, y = QCM, group = Indicator, colour = "QCM")) +
+    geom_point(aes(x = Time, y = QCM, group = Indicator, colour = "QCM")) +
+    geom_line(aes(x = Time, y = QCMX, group = Indicator, colour = "QCMX")) + 
+    geom_point(aes(x = Time, y = QCMX, group = Indicator, colour = "QCMX")) +
+    facet_wrap(.~Indicator, scales = "free_y") +
+    xlab("Post-treatment period") + 
+    ylab("")+
+    scale_colour_hue("")+
+    scale_x_continuous(breaks = 1:T1)
 }
