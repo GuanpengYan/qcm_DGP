@@ -6,7 +6,7 @@ source("R/.Source.R")
 N <- c(40,70)
 T0 <- c(40,70)
 T1 <- 10
-BS <- 1:10
+BS <- 1:1000
 nthreads <- 2
 seed <- 1
 Process <- 1:7
