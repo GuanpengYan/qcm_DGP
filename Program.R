@@ -9,7 +9,7 @@ T1 <- 10
 BS <- 1:2000
 nthreads <- 2
 seed <- 1
-Process <- 1:1
+Process <- 1:7
 
 for(i in Process){
   file <- paste0("DGP", i, "_data", "(BS=", max(BS), ").Rdata")

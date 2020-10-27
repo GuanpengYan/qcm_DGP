@@ -2,6 +2,14 @@
 .Rhistory
 .RData
 .Ruserdata
-data
+data/*
 ~$DGP.docx
-
+photo/*
+DGP1.xlsx
+DGP2.xlsx
+DGP3.xlsx
+DGP4.xlsx
+DGP5.xlsx
+DGP6.xlsx
+DGP7.xlsx
+DGP.docx
