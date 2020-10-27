@@ -20,7 +20,7 @@ dataGeneratingProcess4 <- function(N, T0, T1){
   eta <- array(dim = c(K, N, T), data = rnorm(N * T * K, mean = 0, sd = 1))
   f <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
   u <- array(dim = c(N, T))
-  sigma2 <- runif(N, min = 0, max = 4)
+  sigma2 <- runif(N, min = 0, max = 1)
   for(i in 1:N) u[i,] <- rnorm(n = T, sd = sqrt(sigma2[i]))
   #Calculate x
   x <- array(dim = c(K, N, T))
