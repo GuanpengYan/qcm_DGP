@@ -11,7 +11,7 @@ dataGeneratingProcess6 <- function(N, T0, T1){
   xi <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
   u <- array(dim = c(N, T))
   for(t in 1:T) u[, t] <- (if(t == 1)
-    xi[, t] else (phi * u[, t-1] + xi[, t]))
+    xi[, t] else (phi * u[, t - 1] + xi[, t]))
   
   #Calculate x
   x <- array(dim = c(K, N, T))
