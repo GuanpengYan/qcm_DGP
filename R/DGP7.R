@@ -6,7 +6,23 @@ dataGeneratingProcess7 <- function(N, T0, T1){
   rho <- array(dim = c(K, N), data = runif(N * K, min = 0.1, max = 0.9))
   c <- array(dim = c(3, N), data = runif(N * 2, min = 1, max = 2))
   eta <- array(dim = c(K, N, T), data = rnorm(N * T * K, mean = 0, sd = 1))
-  f <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
+  zeta <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
+  f <- array(dim = c(3, T))
+  for(t in 1:T){
+    if(t == 1){
+      f[1, t] <- 0.8 * f[2, t] + zeta[1, t]
+      f[2, t] <- zeta[2, t]
+      f[3, t] <- zeta[3, t]
+    }else if(t == 2){
+      f[1, t] <- 0.8 * f[2, t] + zeta[1, t]
+      f[2, t] <- 0.5 * f[2, t - 1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
+      f[3, t] <- zeta[3, t] + 0.9 * zeta[3, t - 1]
+    }else{
+      f[1, t] <- 0.8 * f[2, t] + zeta[1, t]
+      f[2, t] <- 0.5 * f[2, t-1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
+      f[3, t] <- zeta[3, t] + 0.9 * zeta[3, t - 1] + 0.4 *zeta[3, t - 2]
+    }
+  }
   u <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
   
   #Calculate x
@@ -18,7 +34,7 @@ dataGeneratingProcess7 <- function(N, T0, T1){
   #Calculate y.ctfl
   y.ctfl <- array(dim = c(N, T))
   for(t in 1:T) for(i in 1:N) 
-    y.ctfl[i, t] <-  sum(gamma[, i] * f[, t]) + u[i, t]
+    y.ctfl[i, t] <- sum(x[, i, t] * beta) + sum(gamma[, i] * f[, t]) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
   
@@ -32,6 +48,7 @@ dataGeneratingProcess7 <- function(N, T0, T1){
     rho = rho,
     c = c,
     eta = eta,
+    zeta = zeta,
     f = f,
     u = u,
     x = x,
@@ -41,5 +58,5 @@ dataGeneratingProcess7 <- function(N, T0, T1){
 }
 # source("R/.Source.R")
 # 
-# dataGeneratingProcess7(40, 40, 10)
+# dataGeneratingProcess1(40, 40, 10)
 # save(DGP1_data,file = "DGP1_data.Rdata")

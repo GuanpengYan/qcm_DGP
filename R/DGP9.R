@@ -1,4 +1,4 @@
-dataGeneratingProcess4 <- function(N, T0, T1){
+dataGeneratingProcess9 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 4)
   T <- T0 + T1
@@ -7,9 +7,8 @@ dataGeneratingProcess4 <- function(N, T0, T1){
   c <- array(dim = c(3, N), data = runif(N * 2, min = 1, max = 2))
   eta <- array(dim = c(K, N, T), data = rnorm(N * T * K, mean = 0, sd = 1))
   f <- array(dim = c(3, T), data = rnorm(n = 3 * T, mean = 0, sd = 1))
-  u <- array(dim = c(N, T))
-  sigma2 <- runif(N, min = 0, max = 1)
-  for(i in 1:N) u[i,] <- rnorm(n = T, sd = sqrt(sigma2[i]))
+  u <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
+  
   #Calculate x
   x <- array(dim = c(K, N, T))
   for(t in 1:T) for(i in 1:N) for(k in 1:K) x[k, i, t] <- ifelse(
@@ -19,7 +18,7 @@ dataGeneratingProcess4 <- function(N, T0, T1){
   #Calculate y.ctfl
   y.ctfl <- array(dim = c(N, T))
   for(t in 1:T) for(i in 1:N) 
-    y.ctfl[i, t] <- sum(x[, i, t] * beta) + sum(gamma[, i] * f[, t]) + u[i, t]
+    y.ctfl[i, t] <-  sum(gamma[, i] * f[, t]) + u[i, t]
   #Calculate y.actl
   y.actl <- y.ctfl; for(t in (T0 + 1):T) y.actl[1, t] <- y.actl[1, t] + 1
   
@@ -34,7 +33,6 @@ dataGeneratingProcess4 <- function(N, T0, T1){
     c = c,
     eta = eta,
     f = f,
-    sigma2 = sigma2,
     u = u,
     x = x,
     y.ctfl = y.ctfl,
@@ -43,5 +41,5 @@ dataGeneratingProcess4 <- function(N, T0, T1){
 }
 # source("R/.Source.R")
 # 
-# dataGeneratingProcess4(40, 40, 10)
+# dataGeneratingProcess7(40, 40, 10)
 # save(DGP1_data,file = "DGP1_data.Rdata")

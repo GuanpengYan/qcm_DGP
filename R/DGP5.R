@@ -1,15 +1,3 @@
-### Confidence Intervals via Quantile Random Forest for DGP 1 in Hsiao et al. (2018,p.8)
-# N = 10,20,30,40,50,60 (number of individuals), only the first individual is treated in the posttreatment period
-# T0 = 10,20,30,40,50,60,70,80,90 (pretreatment period)
-
-# T1 = 1 (posttreatment period)
-# K = 2 (number of factors)
-# reps = 1000 (number of simulations)
-
-# Define a function ci.qcm of T0 to compute the coverage rate for T1 posttreatment periods
-# Other parameters and DGP are all fixed 
-# ci.qcm refers to "confidence interval for quantile control method"
-
 dataGeneratingProcess5 <- function(N, T0, T1){
   K <- 2
   beta <- c(1, 4)
@@ -23,7 +11,7 @@ dataGeneratingProcess5 <- function(N, T0, T1){
   xi <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
   u <- array(dim = c(N, T))
   for(t in 1:T) u[, t] <- (if(t == 1)
-    sqrt(1 - phi^2) * xi[, t] else sqrt(1 - phi^2) * (phi * u[, t-1] + xi[, t]))
+    xi[, t] else (phi * u[, t-1] + sqrt(1 - phi^2) * xi[, t]))
   
   #Calculate x
   x <- array(dim = c(K, N, T))
