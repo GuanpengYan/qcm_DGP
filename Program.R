@@ -4,8 +4,8 @@ library(ggplot2)
 source("R/.Source.R")
 
 # Default Setting
-N <- c(40,70)
-T0 <- c(40,70)
+N <- c(30,45)
+T0 <- c(50,70)
 T1 <- 10
 BS <- 1:2000
 nthreads <- 2

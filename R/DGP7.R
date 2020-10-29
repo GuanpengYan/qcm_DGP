@@ -11,17 +11,15 @@ dataGeneratingProcess7 <- function(N, T0, T1){
   for(t in 1:T){
     if(t == 1){
       f[2, t] <- zeta[2, t]
-      f[1, t] <- 0.6 * f[2, t] + zeta[1, t]
       f[3, t] <- zeta[3, t]
     }else if(t == 2){
-      f[2, t] <- 0.5 * f[2, t - 1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
-      f[1, t] <- 0.6 * f[2, t] + zeta[1, t]
-      f[3, t] <- zeta[3, t] + 0.3 * zeta[3, t - 1]
+      f[2, t] <- -0.6 * f[2, t - 1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
+      f[3, t] <- zeta[3, t] + 0.8 * zeta[3, t - 1]
     }else{
-      f[2, t] <- 0.5 * f[2, t-1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
-      f[1, t] <- 0.6 * f[2, t] + zeta[1, t]
-      f[3, t] <- zeta[3, t] + 0.3 * zeta[3, t - 1] + 0.4 *zeta[3, t - 2]
+      f[2, t] <- -0.6 * f[2, t-1] + zeta[2, t] + 0.7 * zeta[2, t - 1]
+      f[3, t] <- zeta[3, t] + 0.8 * zeta[3, t - 1] + 0.4 *zeta[3, t - 2]
     }
+    f[1, t] <- 0.8 * f[2, t] + zeta[1, t]
   }
   u <- array(dim = c(N, T), data = rnorm(N * T, mean = 0, sd = 1))
   
